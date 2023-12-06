@@ -1,12 +1,44 @@
 from tkinter import *
+from tkinter import messagebox
+from tkinter import filedialog
 
 from PIL import ImageTk, Image, ImageOps
 
 import os 
 
+def open_file():
+    folder_patch = filedialog.askdirectory()
+
+    if folder_patch:
+        messagebox.showinfo(
+            title='Abrindo diretório...',
+            message=f'O diretório selecionado foi: {folder_patch}'
+        )
+    else:
+        messagebox.showerror(
+            title='Erro ao abrir diretório',
+            message='Nehum diretório foi selecionado'
+
+        )
+        
+    
+
 root = Tk()
 
-root.title('Cadastro')
+menubar = Menu(root)
+
+filemenu = Menu(menubar, tearoff=0)
+
+filemenu.add_command(label="Open", command=open_file)
+filemenu.add_command(label="Save")
+filemenu.add_command(label="Exit")
+
+menubar.add_cascade(label="File", menu=filemenu)
+
+root.config(menu=menubar)
+
+#Titulo barra menu
+root.title('Album')
 
 #Lista os arquivos da pasta imagens
 arquivos = os.listdir('imagens')
@@ -20,11 +52,16 @@ imagem_atual = 0
 #Percorer a lista de arquivos
 for arquivo in arquivos:
     #Abre a imagem
-    img = Image.open('imagens/' + arquivo)
+    try:
+        img = Image.open('imagens/' + arquivo)
+    except:
+        pass
     #Redimencionar imagem
-    img = ImageOps.contain(img, (300, 200))
+    img = ImageOps.contain(img, (500, 500))
     #Adiciona a imagem a lista
     imagens.append(ImageTk.PhotoImage(img))
+
+
 
 #Exibe arquivos em um label
 #arquivos_label = Label(root, text=arquivos)
@@ -76,16 +113,21 @@ def next_Image():
     pass
 
 #Cria botao 
-botao = Button(root, text='ANTERIOR', command=prev_Image)
+botao = Button(root, text='ANTERIOR', command=prev_Image, bg='black', fg='white', font=('Arial',10,'bold'))
 
-botao.grid(column=0 , row=1)
+botao.grid(column=0 , row=1, sticky= E + W)
 
-botao = Button(root, text='PROXIMO', command=next_Image)
+botao = Button(root, text='PROXIMO', command=next_Image, bg='black', fg='white', font=('Arial',10,'bold'))
 
-botao.grid(column=1 , row=1)
+botao.grid(column=1 , row=1, sticky= E + W)
 
-botao = Button(root, text='SAIR', command=root.quit)
+botao = Button(root, text='SAIR', command=root.quit, bg='black', fg='white', font=('Arial',10,'bold'))
 
-botao.grid(column=2 , row=1)
+botao.grid(column=2 , row=1, sticky= E + W)
+
+root.bind('<Right>', lambda event: next_Image())
+root.bind('<Left>', lambda event: prev_Image())
+root.bind('<Escape>', lambda event: root.quit())
+
 
 root.mainloop()
